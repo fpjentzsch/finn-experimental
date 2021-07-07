@@ -52,9 +52,9 @@ class MakeFinegrained(Transformation):
             if node.op_type == "FMPadding_Batch":
                 #iteratively remove everything between a padding node and the subsequent SWU
                 node_output = node.output[0]
-                consumer = model.find_producer(node_output)
+                consumer = model.find_consumer(node_output)
                 if consumer is not None:
-                    if producer.op_type != "ConvolutionInputGenerator":
+                    if consumer.op_type != "ConvolutionInputGenerator":
                         node.output[0] = consumer.output[0]
                         graph.node.remove(consumer)
                         return (model, True)
@@ -104,6 +104,7 @@ class MakeFinegrained(Transformation):
                     PaddingStyle=style,
                     MMVI=1,
                     MMVO=1,
+                    ram_style=ram_style,
                 )
                 graph.node.insert(node_ind, new_node)
                 # remove old nodes

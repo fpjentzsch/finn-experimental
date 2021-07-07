@@ -75,6 +75,12 @@ class ConvolutionInputGenerator_MMV(HLSCustomOp):
             # in case of uneven padding -- see FMPadding fxn
             # in hlslib
             "PaddingStyle": ("i", False, 2, {2, 1}),
+            "ram_style": (
+                "s",
+                False,
+                "distributed",
+                {"auto", "block", "distributed", "ultra"},
+            ),
         }
         my_attrs.update(super().get_nodeattr_types())
         return my_attrs
@@ -119,9 +125,9 @@ class ConvolutionInputGenerator_MMV(HLSCustomOp):
         mmvo = self.get_nodeattr("MMVO")
         simd = self.get_nodeattr("SIMD")
         ifm_ch = self.get_nodeattr("IFMChannels")
-        ifm_dim = self.get_nodeattr("IFMDim")
-        k = self.get_nodeattr("ConvKernelDim")
-        stride = self.get_nodeattr("Stride")
+        ifm_dim = self.get_nodeattr("IFMDim")[0]
+        k = self.get_nodeattr("ConvKernelDim")[0]
+        stride = self.get_nodeattr("Stride")[0]
         ram_style = self.get_nodeattr("ram_style")
         if ram_style == "distributed":
             ram_luts = int(
